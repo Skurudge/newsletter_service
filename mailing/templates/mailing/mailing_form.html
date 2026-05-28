@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm my-4 text-start">
+            <div class="card-header bg-dark text-white py-3">
+                <h4 class="m-0 fw-bold">
+                    {% if object %}Управление параметрами{% else %}Создание новой{% endif %} рассылки
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {# Если форму открыл Менеджер, выводим только чекбокс активности (Задача 9) #}
+                    {% if user.groups.all and not user.is_superuser %}
+                        <div class="alert alert-info">
+                            Вы вошли под ролью Менеджера. Вам доступно только отключение/включение рассылки.
+                        </div>
+                        <div class="form-check form-switch fs-5 mb-3">
+                            {{ form.is_active }}
+                            <label class="form-check-label fw-semibold" for="id_is_active">Разрешить выполнение рассылки сервисом</label>
+                        </div>
+                    {% else %}
+                        {# Обычный пользователь или суперадмин видит стандартные поля ввода #}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Дата и время начала отправки *</label>
+                            {{ form.start_time }}
+                            {% if form.start_time.errors %}
+                                <div class="text-danger small mt-1">{{ form.start_time.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Дата и время окончания отправки *</label>
+                            {{ form.end_time }}
+                            {% if form.end_time.errors %}
+                                <div class="text-danger small mt-1">{{ form.end_time.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Привязанный шаблон письма *</label>
+                            {{ form.message }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold d-block">Выберите получателей из вашей базы *</label>
+                            <div class="border rounded p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                                {{ form.recipients }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow-sm max-width-md mx-auto my-4 text-start">
+    <div class="card-header bg-dark text-white py-3">
+        <h4 class="m-0 fw-bold">Просмотр шаблона письма</h4>
+    </div>
+    <div class="card-body p-4">
+        <div class="mb-3">
+            <label class="text-muted small d-block">Тема письма:</label>
+            <span class="fs-5 fw-bold text-primary">{{ message.title }}</span>
+        </div>
+        <div class="mb-3">
+            <label class="text-muted small d-block">Тело (текст) сообщения:</label>
+            <div class="bg-light p-3 rounded border text-dark fs-6" style="white-space: pre-wrap;">{{ message.body }}</div>
+        </div>
+        <div class="mb-3">
+            <label class="text-muted small d-block">Владелец контента:</label>
+            <span class="badge bg-secondary">{{ message.owner.email }}</span>
+        </div>
+        <hr class="my-4">
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'mailing:message_list' %}" class="btn btn-outline-secondary">Назад к списку</a>
+            {% if message.owner == user or user.is_superuser %}
+            <div>
+                <a href="{% url 'mailing:message_update' message.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'mailing:message_delete' message.pk %}" class="btn btn-danger">Удалить</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

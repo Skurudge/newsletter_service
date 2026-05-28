@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger my-5 text-start">
+            <div class="card-header bg-danger text-white py-3">
+                <h4 class="m-0 fw-bold">Удаление шаблона</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <p class="fs-5 text-dark mb-4">Вы действительно хотите полностью удалить шаблон письма <strong>"{{ object.title }}"</strong>?</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'mailing:message_list' %}" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-danger">Да, удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

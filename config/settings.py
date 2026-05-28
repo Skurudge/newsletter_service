@@ -2,12 +2,10 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Загружаем переменные окружения из файла .env
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Читаем секретный ключ и режим отладки из .env
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG") == "True"
 
@@ -21,7 +19,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Сюда мы завтра добавим наши новые приложения для рассылок
+    # Наши приложения
+    "mailing",
+    "users",
+    "blog",
 ]
 
 MIDDLEWARE = [
@@ -39,7 +40,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # Сразу заложили глобальную папку шаблонов
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -53,7 +54,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# Настройка подключения к новой PostgreSQL из .env
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -65,6 +65,22 @@ DATABASES = {
     }
 }
 
+# Задача 10: Настройка серверного кеширования через Redis с фиксацией RESP2 протокола в URL
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # Дописываем ?protocol=2 прямо в конец адреса подключения для старых серверов на Windows
+        "LOCATION": os.getenv("REDIS_LOCATION", "redis://127.0.0.1:6379/1") + "?protocol=2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
+# Переключение на кастомную модель пользователя (Задача 7)
+AUTH_USER_MODEL = "users.User"
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -72,7 +88,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# Настройки локализации под русскоязычный интерфейс
 LANGUAGE_CODE = "ru-ru"
 TIME_ZONE = "Europe/Moscow"
 USE_I18N = True
@@ -82,3 +97,13 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Настройки отправки почты (Консольный бэкенд для тестирования рассылок на первом этапе)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Редиректы для авторизации
+LOGIN_URL = "users:login"
+LOGIN_REDIRECT_URL = "mailing:home"
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
