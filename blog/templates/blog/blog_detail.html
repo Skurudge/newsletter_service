@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow-sm max-width-lg mx-auto my-4 text-start border-0 overflow-hidden">
+    {% if post.image %}
+        <img src="{{ post.image.url }}" class="img-fluid w-100" style="max-height: 450px; object-fit: cover;">
+    {% endif %}
+    
+    <div class="card-body p-4 p-md-5">
+        <h1 class="fw-bold text-dark mb-3">{{ post.title }}</h1>
+        
+        <div class="d-flex gap-3 text-muted small mb-4 pb-3 border-bottom">
+            <span>📅 Опубликовано: <strong>{{ post.created_at|date:"d.m.Y H:i" }}</strong></span>
+            <span>👀 Просмотров: <strong>{{ post.views_count }}</strong></span>
+        </div>
+        
+        <div class="fs-5 text-secondary lead mb-5" style="white-space: pre-wrap; line-height: 1.8;">{{ post.content }}</div>
+        
+        <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+            <a href="{% url 'blog:list' %}" class="btn btn-outline-secondary">Назад к публикациям</a>
+            
+            {% if user.is_superuser or perms.blog.change_blogpost %}
+            <div class="btn-group">
+                <a href="{% url 'blog:update' post.pk %}" class="btn btn-warning px-4">Редактировать</a>
+                <a href="{% url 'blog:delete' post.pk %}" class="btn btn-danger px-4">Удалить</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

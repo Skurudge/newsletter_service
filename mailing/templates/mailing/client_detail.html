@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow-sm max-width-md mx-auto my-4">
+    <div class="card-header bg-primary text-white py-3">
+        <h4 class="m-0 fw-bold">Профиль получателя</h4>
+    </div>
+    <div class="card-body text-start p-4">
+        <div class="mb-3">
+            <label class="text-muted small d-block">Ф. И. О.</label>
+            <span class="fs-5 fw-bold text-dark">{{ client.full_name }}</span>
+        </div>
+        <div class="mb-3">
+            <label class="text-muted small d-block">Электронный адрес (Email)</label>
+            <span class="fs-5 text-dark"><code>{{ client.email }}</code></span>
+        </div>
+        <div class="mb-3">
+            <label class="text-muted small d-block">Внутренний комментарий</label>
+            <p class="lead fs-6 bg-light p-3 rounded border text-secondary" style="white-space: pre-wrap;">{{ client.comment|default:"Комментарий отсутствует." }}</p>
+        </div>
+        <div class="mb-3">
+            <label class="text-muted small d-block">Учетная запись владельца</label>
+            <span class="badge bg-secondary">{{ client.owner.email }}</span>
+        </div>
+        <hr class="my-4">
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'mailing:client_list' %}" class="btn btn-outline-secondary">Назад к списку</a>
+            {% if client.owner == user or user.is_superuser %}
+            <div>
+                <a href="{% url 'mailing:client_update' client.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'mailing:client_delete' client.pk %}" class="btn btn-danger">Удалить</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

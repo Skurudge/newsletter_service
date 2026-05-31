@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm my-4 text-start">
+            <div class="card-header bg-primary text-white py-3 text-center">
+                <h4 class="m-0 fw-bold">Регистрация в сервисе</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ field.label }} *</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success fw-semibold">Зарегистрироваться</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3 small">
+                    <a href="{% url 'users:login' %}" class="text-decoration-none">Уже есть аккаунт? Авторизоваться</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

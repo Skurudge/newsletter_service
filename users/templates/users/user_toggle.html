@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-warning my-5 text-start">
+            <div class="card-header bg-warning text-dark py-3">
+                <h4 class="m-0 fw-bold">Изменение статуса учетной записи</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <p class="fs-5 text-dark mb-4">Вы уверены, что хотите изменить доступ для пользователя <strong>{{ object.email }}</strong>?</p>
+                    
+                    <div class="form-check form-switch fs-5 mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label fw-semibold" for="id_is_active">Пользователь активен (разрешен вход)</label>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'users:user_list' %}" class="btn btn-outline-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-warning fw-semibold">Сохранить статус</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

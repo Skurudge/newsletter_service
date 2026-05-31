@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-3 shadow-sm border text-center">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold text-primary">Сервис умных рассылок</h1>
+        <p class="col-md-8 mx-auto fs-5 text-muted">
+            Управляйте базой клиентов, создавайте персонализированные сообщения и запускайте автоматические или ручные email-кампании с детальной статистикой.
+        </p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'users:register' %}" class="btn btn-primary btn-lg px-4">Начать бесплатно</a>
+        {% endif %}
+    </div>
+</div>
+
+<h3 class="fw-bold mb-4 text-start">📊 Общая статистика платформы (из кэша)</h3>
+
+<div class="row text-center mb-5">
+    <div class="col-md-4 mb-3">
+        <div class="card border-primary h-100 shadow-sm">
+            <div class="card-body d-flex flex-column justify-content-center py-4">
+                <h1 class="display-4 fw-bold text-primary">{{ mailings_count }}</h1>
+                <p class="card-text text-muted uppercase fw-semibold">Всего рассылок</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card border-success h-100 shadow-sm">
+            <div class="card-body d-flex flex-column justify-content-center py-4">
+                <h1 class="display-4 fw-bold text-success">{{ active_mailings_count }}</h1>
+                <p class="card-text text-muted uppercase fw-semibold">Активных сейчас</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card border-info h-100 shadow-sm">
+            <div class="card-body d-flex flex-column justify-content-center py-4">
+                <h1 class="display-4 fw-bold text-info">{{ unique_clients_count }}</h1>
+                <p class="card-text text-muted uppercase fw-semibold">Уникальных получателей</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

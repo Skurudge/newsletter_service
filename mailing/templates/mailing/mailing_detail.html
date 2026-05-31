@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row text-start justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm my-4">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h4 class="m-0 fw-bold">Управление кампанией рассылки #{{ mailing.pk }}</h4>
+                <div>
+                    {% if mailing.is_active %}
+                        <span class="badge bg-success fs-6">Модерация: Активна</span>
+                    {% else %}
+                        <span class="badge bg-danger fs-6">Модерация: Заблокирована менеджером</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small d-block">Временной диапазон работы (Europe/Moscow):</label>
+                        <span class="fw-semibold">С {{ mailing.start_time|date:"d.m.Y H:i" }} по {{ mailing.end_time|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small d-block">Текущий вычисленный статус (ТЗ Задача 3):</label>
+                        <span class="badge fs-6 {% if mailing.status == 'Запущена' %}bg-success{% elif mailing.status == 'Создана' %}bg-info text-dark{% else %}bg-secondary{% endif %}">
+                            {{ mailing.status }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card bg-light mb-4 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-primary">📩 Привязанный шаблон письма:</h5>
+                        <p class="mb-1"><strong>Тема:</strong> {{ mailing.message.title }}</p>
+                        <p class="text-muted mb-0" style="white-space: pre-wrap;">{{ mailing.message.body|truncatechars:300 }}</p>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 text-secondary">👥 Получатели этой рассылки ({{ mailing.recipients.count }}):</h5>
+                <div class="bg-white border rounded p-3 mb-4" style="max-height: 150px; overflow-y: auto;">
+                    {% for recipient in mailing.recipients.all %}
+                        <div class="border-bottom py-1 small">✔️ {{ recipient.full_name }} — <code>{{ recipient.email }}</code></div>
+                    {% empty %}
+                        <div class="text-muted small">Список получателей пуст.</div>
+                    {% endfor %}
+                </div>
+
+                <div class="p-3 bg-light rounded border border-warning d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h6 class="fw-bold m-0 text-dark">🚀 Запуск по требованию (Задача 4)</h6>
+                        <small class="text-muted">Проверит временной интервал и мгновенно отправит письма получателям.</small>
+                    </div>
+                    {% if mailing.owner == user or user.is_superuser %}
+                        <form action="{% url 'mailing:mailing_run' mailing.pk %}" method="post" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary px-4 fw-semibold" {% if not mailing.is_active or mailing.status == 'Завершена' %}disabled{% endif %}>
+                                Запустить отправку сейчас
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="text-danger small fw-semibold">Доступно только владельцу</span>
+                    {% endif %}
+                </div>
+
+                <hr class="my-4">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-secondary">Назад к списку</a>
+                    <div>
+                        <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-warning">
+                            {% if user.groups.all and not user.is_superuser %}Изменить активность{% else %}Редактировать{% endif %}
+                        </a>
+                        {% if mailing.owner == user or user.is_superuser %}
+                            <a href="{% url 'mailing:mailing_delete' mailing.pk %}" class="btn btn-danger">Удалить рассылку</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

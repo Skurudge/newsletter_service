@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="fw-bold mb-4 text-start">👥 Пользователи сервиса рассылок (Панель менеджера)</h2>
+
+<div class="card shadow-sm border-0 text-start">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Email</th>
+                    <th>Дата регистрации</th>
+                    <th>Статус верификации</th>
+                    <th>Статус доступа</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for target_user in users_list %}
+                <tr>
+                    <td class="fw-bold">{{ target_user.email }}</td>
+                    <td>{{ target_user.date_joined|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        {% if target_user.is_verified %}
+                            <span class="badge bg-success">Подтвержден</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Ожидает</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if target_user.is_active %}
+                            <span class="badge bg-outline-success text-success border border-success">Активен</span>
+                        {% else %}
+                            <span class="badge bg-danger">Заблокирован</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {# Запрещаем менеджеру блокировать самого себя или главного суперадмина #}
+                        {% if target_user != user and not target_user.is_superuser %}
+                            <a href="{% url 'users:user_toggle' target_user.pk %}" class="btn btn-sm {% if target_user.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                {% if target_user.is_active %}Заблокировать{% else %}Разблокировать{% endif %}
+                            </a>
+                        {% else %}
+                            <small class="text-muted">—</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
